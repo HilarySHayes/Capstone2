@@ -31,7 +31,6 @@ def peak_detector(df, gain_threshold):
         [pandas dataframe]: [df containing activities where the 
         altitude gain is great than the specified gain threshold]
     """
-    #df.rename(columns={'alt': 'altitude', 'lat': 'position_lat', 'lon': 'position_long'}, inplace=True) 
     with_alt = df.dropna(subset=['altitude'])
     peaks = with_alt.groupby('activity_id').apply(max_altitude)
     peaks = peaks[peaks['gain'] > gain_threshold]
@@ -91,7 +90,7 @@ def peak_clustering(peaks, epsilon, min_samples=2):
     return cluster_series
 
 def save_cluster_plot(person, epsilon, colormap, filename, gain_threshold=400, steps=10):
-    """[Saves the clusterplot]
+    """[Saves the clusterplot.]
     Args:
         person ([string]): [The name of the folder in ../data 
         where activity files are.]
