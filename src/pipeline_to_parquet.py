@@ -87,5 +87,5 @@ def parquet_activities(person):
 if __name__ == "__main__":
 
     people =  ['MB_Strava', 'BL_Strava', 'KM_Strava', 'LB_Strava', 'BK_Strava']
-    parquet_activities(people[0])
+    parquet_activities(people[3])
 

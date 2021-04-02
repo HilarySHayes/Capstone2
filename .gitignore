@@ -1,2 +1,5 @@
 data
 .ipynb_checkpoints/
+__pycache__/
+.gitignore
+.DS_Store
