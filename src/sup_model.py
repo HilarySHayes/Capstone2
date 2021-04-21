@@ -8,11 +8,32 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import RandomizedSearchCV
 
 def prepare_data(df):
+    """[Splits df into features and target then splits into train, test split]
+    Args:
+        df ([pandas df]): [df containing features and target column mode]
+    Returns:
+        [tuple of numpy arrays]: [X_train, X_test, y_train, y_test]
+    """
     X = df.drop("mode", axis=1).values
     y = df['mode'].copy().values
     return train_test_split(X, y)
 
 def search_for_model(X_train, y_train, random_grid, n_iter, cv):
+    """[Search for the best random forest classifier and return
+        the best model]
+    Args:
+        X_train ([numpy array]): [training features]
+        y_train ([numpy array]): [target]
+        random_grid ([dictionary]): [dictionary where the keys 
+                                    are the parameters names as strings
+                                    to search over and values are 
+                                    the list of parameter values
+                                    to search over]
+        n_iter ([int]): [number of parameter settings that are sampled]
+        cv ([int]): [number of cross-validation folds to use]
+    Returns:
+        best estimator that was found in the search
+    """
     clf = RandomForestClassifier()
     clf_random = RandomizedSearchCV(estimator=clf, 
                                param_distributions=random_grid, 
@@ -23,6 +44,12 @@ def search_for_model(X_train, y_train, random_grid, n_iter, cv):
     return clf_random.best_estimator_
 
 def confusion_plot(X_test, y_test, clf):
+    """[Plots the confusion matrix]
+    Args:
+        X_test ([numpy array]): [the test features]
+        y_test ([numpy array]): [the test targets]
+        clf ([model]): [fit classifier]
+    """
     y_pred = clf.predict(X_test)
     cm = confusion_matrix(y_test, y_pred, labels=clf.classes_)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clf.classes_)
