@@ -2,7 +2,7 @@
 
 <div style="text-align:center"><img src="./images/IMG_1553.jpeg" /></div>
 
-# Strava Peak Clustering
+# Strava Peak Clustering And Modality Prediction
 
 ## Background & Motivation
 
@@ -10,21 +10,73 @@ Strava is a great asset for people wanting to track their exercise endeavors rep
 
 ## Data
 
-I collected private [Strava](https://www.strava.com/) data from a few Colorado athletes.  For each activity, an athlete has an overview summary including information such as activity date, type, elapsed time, distance, the associated filename, elevation gain, elevation low/high, and much more. Combining athletes there were more than 5000 recorded activities. 
+I collected private [Strava](https://www.strava.com/) data from a few Colorado athletes.  For each activity, an athlete has an  overview summary including information such as activity date, type, elapsed time, distance, the associated filename, elevation gain, elevation low/high, and much more. Combining athletes there were more than 5000 recorded activities. 
 
-    | Activity Date            |   Activity ID | Activity Name   | Activity Type   |   Elapsed Time |   Distance | Commute   | Filename                     |   Moving Time |   Max Speed |   Elevation Gain |   Elevation Low |   Elevation High |   Max Grade |   Average Grade |   Average Temperature |
-    |--------------------------|---------------|-----------------|-----------------|----------------|------------|-----------|------------------------------|---------------|-------------|------------------|-----------------|------------------|-------------|-----------------|-----------------------|
-    | Jul 19, 2018, 11:54:08 AM|    1714403192 | Morning Hike    | Hike            |          43352 |      44.33 | False     | activities/1839577269.fit.gz |         38527 |         3.4 |             2287 |          2934.6 |           3748.2 |        43.3 |       0.0248099 |                    24 |
+<table style="width:100%">
+  <tr>
+    <th>Activity Date</th>
+    <th>Activity ID</th>
+    <th>Activity Name</th>
+    <th>Activity Type</th>
+    <th>Elapsed Time</th>
+    <th>Distance</th>
+    <th>Commute</th>
+    <th>Filename</th>
+    <th>Moving Time</th>
+    <th>Max Speed</th>
+    <th>Elevation Gain</th>
+    <th>Elevation Low</th>
+    <th>Elevation High</th>
+    <th>Max Grade</th>
+    <th>Average Grade</th>
+  </tr>
+  <tr>
+    <td>Jul 26, 2017, 8:21:36 PM</td>
+    <td>1106257168</td>
+    <td>Afternoon Run</td>
+    <td>Run</td>
+    <td>8880</td>
+    <td>16.15</td>
+    <td>False</td>
+    <td>activities/1210692085.fit.gz</td>
+    <td>8442</td>
+    <td>4.0</td>
+    <td>440</td>
+    <td>2139.4</td>
+    <td>2549.6</td>
+    <td>37.1</td>
+    <td>0.0025</td>
+  </tr>
+</table>
 
 For each activity, there is a file containing more detailed information about the activity often collected at second intervals throughout the activity. There were multiple different formats including: .gpx, .tcx, .fit file types to handle.  Even for a single user the method used to record each activity varied due to changing watches, using a cellphone etc. As a result, the recorded data varied in what it contained.  It was not uncommon within an activity to be missing latitude, longitude, or altitude for multiple second intervals.  Some devices used were not capable of collecting elevation data in which case for those activities all elevation data is missing. 
 
-
-    |    | timestamp           |   position_lat |   position_long |   distance |   altitude |   speed |   cadence |   temperature |
-    |----|---------------------|----------------|-----------------|------------|------------|---------|-----------|---------------|
-    |  0 | 2015-12-12 18:41:42 |        40.0201 |        -105.298 |       0    |     1698.8 |   0     |         0 |            23 |
-    |  1 | 2015-12-12 18:41:45 |        40.0202 |        -105.298 |       0    |     1698.8 |   4.535 |        59 |            23 |
-    |  2 | 2015-12-12 18:41:56 |        40.02   |        -105.298 |      20.55 |     1698.8 |   3.602 |        93 |            23 |
-
+<table style="width:90%;margin-left:auto;margin-right=auto">
+  <tr>
+    <th>timestamp</th>
+    <th>position_lat</th>
+    <th>position_long</th>
+    <th>altitude</th>
+  </tr>
+  <tr>
+    <td>2017-07-26 20:21:46</td>
+    <td>40.534288</td>
+    <td>-106.784181</td>
+    <td>2545.6</td>
+  </tr>
+    <tr>
+    <td>2017-07-26 20:21:47</td>
+    <td>40.534268</td>
+    <td>-106.784174</td>
+    <td>2546.0</td>
+  </tr>
+    <tr>
+    <td>2017-07-26 20:21:52</td>
+    <td>40.534201</td>
+    <td>-106.784114</td>
+    <td>2546.8</td>
+  </tr>
+</table>
 
 
 ## Clustering Peaks
@@ -35,20 +87,80 @@ This list gives a starting point for clustering peaks.  For each activity, I pic
 
 The `DBSCAN` algorithm has a distance threshold that has a very intuitive meaning and for this application, is the distance between peaks that should be classified together.  To visually verify that I have the correct value for this critical parameter, I mapped the peaks and color-coded different cluster to visually see how `DBSCAN` performed and then refined the value based on what I believed to be the best clustering.  Future work will investigate if this performs well across a variety of different athletes and terrain choices.
 
-As mentioned above, not all activities had altitude information.  Once the peaks had been identified, I was able to scan through previously uncategorized activities to identify tracks that had come within the epsilon distance used by `DBSCAN` to further increase the accuracy of my peak counts.  Unfortunately, it is still possible that some activities that involved a peak experience for which there is no altitude data, and therefore, a blind spot in this analysis.
+## Peak Clustering Results
 
-## Results
+I applied the algorithm described above to two different data sets.  The first is a friend who love climbing the first flatiron in Boulder, CO, but would love to know how many times he's climbed that route and some basic statistics that surround this group of data.  The second data set is from an athlete that frequently climbs Mount Victoria and runs, skis, or even paraglides off the summit.  
 
-I applied the algorithm described above to two different data sets.  The first is a friend who love climbing the first flatiron in Boulder, CO, but would love to know how many times he's climbed that route and some basic statistics that surround this group of data.  The second data set is from an athlete that frequently climbs Mount Victoria and runs, skis, or even paraglides off the summit.  How often has this person summited?
-
-<div style="text-align:center"><img src="./images/MtRoyal.png" /></div>
+<div style="text-align:center"><img src="./images/MtRoyal2.png" width="700" /></div>
 <div style="text-align:center"><img src="./images/royalTDT.png" /></div>
 
-<div style="text-align:center"><img src="./images/MtVictoria.png" /></div>
+<div style="text-align:center"><img src="./images/MtVictoria2.png" width="600" /></div>
 <div style="text-align:center"><img src="./images/vicTDAT.png" /></div>
 
-## Future Directions
+Below we can see clusters near Breckenridge, Colorado. The algorithm is correctly clustering activites together that attained the same peak even if the approach or descent takes a different path. 
 
-This is a first step toward understanding the statistics that surround summitting and repeating peaks.  As a recap of the work done, I have filtered activities by their highest point keeping those above a specific threshold, clustered the peaks for which I had altitude data, and associated activities for which I didn't have altitude data with the cluster peaks.  This gives an estimate of peaks were climbed and how often.
+<div style="text-align:center"><img src="./images/Ascents_Near_Breck.png" width="600"/></div>
 
-There are, of course, different ways to enjoy these peaks and being able to detect changes in mode would be an interesting next step.  For example, running up and down might not look too different when accounting for altitude gain or loss, but skiing up and down might have a more dramatic and learnable feature.  What about a bike ride to the trail head, hike up the peak, and then paragliding back home?  Can I identify these different segments?  Similarly, although not a multisport activity, sometimes athletes drive away when they are done.  Can I detect this transition to a new mode of transportation?  Could this be auto-corrected in the future or could your watch ask you if you still want to be recording?
+## Modality Prediction
+
+There are, of course, different ways to enjoy these peaks, so the question I ask is: Can I detect changes in mode?  For example can I detect the difference between skiing up and skiing down or running up and paragliding down. Can I identify these different segments using machine learning? 
+
+To be able to use supervised machine learning to identify modality, I added a column indicating the mode for each row of data in more than 150+ routes.  The table below shows an exmaple of what the data looks like with this additional column.
+
+<table style="width:90%;margin-left:auto;margin-right=auto">
+  <tr>
+    <th>timestamp</th>
+    <th>position_lat</th>
+    <th>position_long</th>
+    <th>altitude</th>
+    <th>mode</th>
+  </tr>
+  <tr>
+    <td>2020-07-09 01:31:35</td>
+    <td>39.569411</td>
+    <td>-106.097616</td>
+    <td>2545.6</td>
+    <th>run up</th>
+  </tr>
+    <tr>
+    <td>...</td>
+    <td>...</td>
+    <td>...</td>
+    <td>...</td>
+  </tr>
+    </tr>
+ </tr>
+    <tr>
+    <td>2020-07-09 02:14:22</td>
+    <td>39.559217</td>
+    <td>-106.123969</td>
+    <td>3124.1</td>
+    <th>fly down</th>
+  </tr>
+</table>
+
+ In order to use this information, and to make it possible to identify shorter or longer activities, I split the activity into 5 minute segements and created a rolling window of time series characteristics that I then used as features for learning mode.  The features I created over the window are:
+
+1. average, std deviation, and max of distance travelled
+2. average, std deviation, and max speed
+3. average, std deviation, and max change in altitude
+4. month of year
+
+I then applied a random forest classifier to preict travel mode based on a windowed 5 minute segement of strava data.  Using a grid search I found an effective classifier and the remaining results in this paper refer to that model.  Below is the confusion matrix for this model:
+
+<div style="text-align:center"><img src="./images/model_confusion_matrix.png" width="400"/></div>
+
+I held out a few tracks from my training and test set to evaluate how well this method performs on unseen tracks.  The picture below shows that the model is able to identify the activity is skiing and is also able to predict the correct uphill and downhill transportation mode on an activity track with multiple ascents of the peak.
+
+<div style="text-align:center"><img src="./images/predictions_for_561475718.png" width="500"/></div>
+
+Notice in the next image that the model has a difficult time deciding if the mode is ski up or run up, but correctly identifies the fly down descent where the athelete was paragliding.
+
+<div><img src="./images/predictions_for_4408957556.png" width="500"/></div>
+
+
+
+
+## Future Work
+
+Similarly, although not a multisport activity, sometimes athletes drive away when they are done.  Can we detect this transition to a new mode of transportation? In order to begin to investigate this more tracks of "driveaways" need to be collected. This additional research could eventually be used as a feature in industry where your watch could prompt you to ensure that you still want to be recording or it could even auto-correct your activity.
