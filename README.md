@@ -81,7 +81,7 @@ For each activity, there is a file containing more detailed information about th
 
 ## Clustering Peaks
 
-Not all activities involve a peak. In order to filter activities that I believe to be a peak experience, I looked for activities that had a `gain_threshold` that is approximately 400 meters.  Activities that met this criterion are considered in our peak clustering.
+Not all activities involve a peak. In order to filter activities that I believe to be a peak experience, I set the `gain_threshold` to 300 meters looking for activities where the elevation gain was greater than or equal to 300m.  Activities that met this criterion are considered in the peak clustering.
 
 This list gives a starting point for clustering peaks.  For each activity, I picked out the latitude and longitude values that corresponded to the highest location.  This new data set, of one point per activity, that represents the peak, was used to cluster the activities into similar peaks using a distance threshold.  I used `DBSCAN`, which is part of  `scikit-learn` to do the clustering.
 
@@ -89,7 +89,7 @@ The `DBSCAN` algorithm has a distance threshold that has a very intuitive meanin
 
 ## Peak Clustering Results
 
-I applied the algorithm described above to two different data sets.  The first is a friend who love climbing the first flatiron in Boulder, CO, but would love to know how many times he's climbed that route and some basic statistics that surround this group of data.  The second data set is from an athlete that frequently climbs Mount Victoria and runs, skis, or even paraglides off the summit.  
+I applied the algorithm described above to two different data sets.  The first is a friend who love climbing the first flatiron in Boulder, CO, but would love to know how many times he's climbed that route and some basic statistics that surround this group of data.  The second data set is from an athlete that frequently climbs Mount Victoria and runs, skis, or even paraglides off the summit. Below are two visualizations from Frisco area showing the multiple ways the same peak was ascended and descended as well as statistics about the peak activities.
 
 <div style="text-align:center"><img src="./images/MtRoyal2.png" width="700" /></div>
 <div style="text-align:center"><img src="./images/royalTDT.png" /></div>
@@ -97,15 +97,15 @@ I applied the algorithm described above to two different data sets.  The first i
 <div style="text-align:center"><img src="./images/MtVictoria2.png" width="600" /></div>
 <div style="text-align:center"><img src="./images/vicTDAT.png" /></div>
 
-Below we can see clusters near Breckenridge, Colorado. The algorithm is correctly clustering activites together that attained the same peak even if the approach or descent takes a different path. 
+Below we can see clusters near Breckenridge, Colorado. The algorithm is correctly clustering activities together that attained the same peak even if the approach or descent takes a different path. 
 
 <div style="text-align:center"><img src="./images/Ascents_Near_Breck.png" width="600"/></div>
 
 ## Modality Prediction
 
-There are, of course, different ways to enjoy these peaks, so the question I ask is: Can I detect changes in mode?  For example can I detect the difference between skiing up and skiing down or running up and paragliding down. Can I identify these different segments using machine learning? 
+There are, of course, different ways to enjoy these peaks, so the question I ask is: Can I detect changes in mode?  For example, can I detect the difference between skiing up and skiing down or running up and paragliding down. Can I identify these different segments using machine learning? 
 
-To be able to use supervised machine learning to identify modality, I added a column indicating the mode for each row of data in more than 150+ routes.  The table below shows an exmaple of what the data looks like with this additional column.
+To be able to use supervised machine learning to identify modality, I added a column indicating the mode for each row of data in more than 150+ routes.  The table below shows an example of what the data looks like with this additional column.
 
 <table style="width:90%;margin-left:auto;margin-right=auto">
   <tr>
@@ -139,14 +139,14 @@ To be able to use supervised machine learning to identify modality, I added a co
   </tr>
 </table>
 
- In order to use this information, and to make it possible to identify shorter or longer activities, I split the activity into 5 minute segements and created a rolling window of time series characteristics that I then used as features for learning mode.  The features I created over the window are:
+ In order to use this information, and to make it possible to identify shorter or longer activities, I split the activity into 5 minute segments and created a rolling window of time series characteristics that I then used as features for learning mode.  The features I created over the window are:
 
 1. average, std deviation, and max of distance travelled
 2. average, std deviation, and max speed
 3. average, std deviation, and max change in altitude
 4. month of year
 
-I then applied a random forest classifier to preict travel mode based on a windowed 5 minute segement of strava data.  Using a grid search I found an effective classifier and the remaining results in this paper refer to that model.  Below is the confusion matrix for this model:
+I then applied a random forest classifier to predict travel mode based on windowed 5 minute segments of Strava data.  Using a grid search I found an effective classifier and the remaining results in this paper refer to that model.  Below is the confusion matrix for this model:
 
 <div style="text-align:center"><img src="./images/model_confusion_matrix.png" width="400"/></div>
 
@@ -154,9 +154,9 @@ I held out a few tracks from my training and test set to evaluate how well this 
 
 <div style="text-align:center"><img src="./images/predictions_for_561475718.png" width="500"/></div>
 
-Notice in the next image that the model has a difficult time deciding if the mode is ski up or run up, but correctly identifies the fly down descent where the athelete was paragliding.
+Notice in the next image that the model has a difficult time deciding if the mode is ski up or run up, but correctly identifies the fly down descent where the athlete was paragliding.
 
-<div><img src="./images/predictions_for_4408957556.png" width="500"/></div>
+<div style="text-align:center"><img src="./images/predictions_for_4408957556.png" width="500"/></div>
 
 
 
